@@ -93,17 +93,28 @@ prompt_delete_addon() {
             "js/addons"
             "design/backend/media/images/addons"
             "design/backend/css/addons"
+            "design/themes/responsive/css/addons"
+            "design/themes/responsive/media/images/addons"
+            "design/themes/responsive/templates/addons"
         )
 
         # Loop through each directory and delete it
         for dir in "${directories[@]}"; do
             # Check if the directory exists
-            if [ -d "$dir/$MODULE" ]; then
+            if [ -d "$dir/$MODULE" ] || [ -f "$dir/$MODULE.po" ]; then
                 # Remove directory
-                if rm -rf "$dir/$MODULE"; then
-                    print_success "Directory $dir/$MODULE successfully removed"
+                if [ -f "$dir/$MODULE.po" ]; then
+                    if rm -rf "$dir/$MODULE".po; then
+                        print_success "Language $dir/$MODULE.po successfully removed"
+                    else
+                        print_error "Failed to remove language $dir/$MODULE"
+                    fi
                 else
-                    print_error "Failed to remove directory $dir/$MODULE"
+                    if rm -rf "$dir/$MODULE"; then
+                        print_success "Directory $dir/$MODULE successfully removed"
+                    else
+                        print_error "Failed to remove directory $dir/$MODULE"
+                    fi
                 fi
             else
                 print_error "Directory $dir/$MODULE does not exist"
@@ -112,6 +123,53 @@ prompt_delete_addon() {
     else
         exit 1
     fi
+}
+
+prompt_addon_zip() {
+    local MODULE="$1"
+    local ISZIP="$2"
+
+    local ADMIN_PATH='app/addons'
+
+    MODULE_DIRECTORY="$ADMIN_PATH/$MODULE"
+
+    # Check if module directory exists
+    if [ -d "$MODULE_DIRECTORY" ]; then
+        if [ "$ISZIP" = "-z" ]; then
+
+            # Directories to delete
+            directories=(
+                "app/addons/$MODULE"
+                "design/backend/templates/addons/$MODULE"
+                "var/langs/en/addons/$MODULE.po"
+                "var/langs/fr/addons/$MODULE.po"
+                "js/addons/$MODULE"
+                "design/backend/media/images/addons/$MODULE"
+                "design/backend/css/addons/$MODULE"
+                "design/themes/responsive/css/addons/$MODULE"
+                "design/themes/responsive/media/images/addons/$MODULE"
+                "design/themes/responsive/templates/addons/$MODULE"
+            )
+
+            # Name of the output zip file
+            zip_file="addon_$MODULE.zip"
+
+            # Create the zip file
+            if zip -r "$zip_file" "${directories[@]}"; then
+                print_success "Zip file '$zip_file' created successfully."
+            else
+                print_success "Unable to create $MODULE Zip file."
+            fi
+
+        else
+            echo "Usage: opencart.sh {create-addon <name>|install-validation-library|create-addon-zip <addon-name> [-z] <zip>|delete <addon-name>}"
+            exit 1
+        fi
+    else
+        print_error "Addon <$MODULE> does not exist"
+        exit 1
+    fi
+
 }
 
 # Function to create directories and files for admin and catalog sides
@@ -739,17 +797,17 @@ EOF
         fi
 
         # Create admin directories and files
-        mkdir -p design/backend/templates/addons/$EXTENSION_NAME/views
-        cat <<EOF >>design/backend/templates/addons/$EXTENSION_NAME/views/${EXTENSION_NAME}.tpl
+        mkdir -p design/backend/templates/addons/$EXTENSION_NAME/views/$EXTENSION_NAME/
+        cat <<EOF >>design/backend/templates/addons/$EXTENSION_NAME/views/$EXTENSION_NAME/${EXTENSION_NAME}.tpl
 
         welcome auto generated addon 
 
 EOF
 
-        if [ -f "design/backend/templates/addons/$EXTENSION_NAME/views/${EXTENSION_NAME}.tpl" ]; then
-            print_success "Created:: design/backend/templates/addons/$EXTENSION_NAME/views/${EXTENSION_NAME}.tpl"
+        if [ -f "design/backend/templates/addons/$EXTENSION_NAME/views/$EXTENSION_NAME/${EXTENSION_NAME}.tpl" ]; then
+            print_success "Created:: design/backend/templates/addons/$EXTENSION_NAME/views/$EXTENSION_NAME/${EXTENSION_NAME}.tpl"
         else
-            print_error "Failed:: design/backend/templates/addons/$EXTENSION_NAME/views/${EXTENSION_NAME}.tpl"
+            print_error "Failed:: design/backend/templates/addons/$EXTENSION_NAME/views/$EXTENSION_NAME/${EXTENSION_NAME}.tpl"
         fi
 
         mkdir -p $ADMIN_PATH/$EXTENSION_NAME/Helpers
@@ -1286,6 +1344,10 @@ install-validation-library)
 delete)
     shift
     prompt_delete_addon "$1"
+    ;;
+create-addon-zip)
+    shift
+    prompt_addon_zip "$1" "$2"
     ;;
 *)
     print "Usage: opencart.sh {create-addon <name>|install-validation-library|create-addon-zip <addon-name> [-z] <zip>|delete <addon-name>}"
