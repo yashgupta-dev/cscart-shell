@@ -1,0 +1,19 @@
+{
+    "name": "code-corner/cscart-shell",
+    "description": "use to create extension and controller, language, model, template, library it will save your max time to create files.",
+    "type": "composer-package",
+    "license": "code-corner ( Yash Gupta ) Copyright",
+    "bin": ["bin/cscart.sh"],
+    "autoload": {
+        "psr-4": {
+            "": ""
+        }
+    },
+    "authors": [
+        {
+            "name": "Yash Gupta"
+        }
+    ],
+    "minimum-stability": "alpha",
+    "require": {}
+}
