@@ -1,4 +1,4 @@
-# opencart.sh
+# cscart.sh
 
 ## Description
 This script provides a set of functionalities to manage OpenCart addons and libraries from the command line.
@@ -6,7 +6,7 @@ This script provides a set of functionalities to manage OpenCart addons and libr
 ## Usage
 
 ```
-opencart.sh {create-addon <name>|install-validation-library|create-addon-zip <addon-name> [-z] <zip>|delete <addon-name>}
+cscart.sh {create-addon <name>|install-validation-library|create-addon-zip <addon-name> [-z] <zip>|delete <addon-name>}
 ```
 
 ### Commands:
@@ -19,7 +19,7 @@ Creates an OpenCart addon with the specified name.
 
 **Example:**
 ```
-opencart.sh create-addon my_new_addon
+cscart.sh create-addon my_new_addon
 ```
 
 #### install-validation-library
@@ -27,7 +27,7 @@ Installs a validation library. This command is self-contained and does not requi
 
 **Example:**
 ```
-opencart.sh install-validation-library
+cscart.sh install-validation-library
 ```
 
 #### create-addon-zip <addon-name> [-z] <zip>
@@ -39,7 +39,7 @@ Creates a zip file for an addon.
 
 **Example:**
 ```
-opencart.sh create-addon-zip my_addon -z my_addon.zip
+cscart.sh create-addon-zip my_addon -z my_addon.zip
 ```
 
 #### delete <addon-name>
@@ -50,7 +50,7 @@ Deletes an existing addon.
 
 **Example:**
 ```
-opencart.sh delete my_addon
+cscart.sh delete my_addon
 ```
 
 ### Notes:
